@@ -1,6 +1,8 @@
 def bfs(start, end, edges):
+    result_path = []
     result_list = []
     index = 0
+    result_path.append(start)
     result_list.append(start)
 
     while(index<len(result_list)):
@@ -44,5 +46,3 @@ def UnInformedSearch(method_name, problem_file_name, maximum_depth_limit):
         return iddfs(lines[0], lines[1], edges, maximum_depth_limit)
     elif method_name == "USC":
         return ucs(lines[0], lines[1], edges)
-
-print(UnInformedSearch("BFS", 'test.txt', 3))
