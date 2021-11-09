@@ -14,7 +14,7 @@ def bfs(start, end, edges):
                 if(item[1] == end):
                     return newPath, visited_nodes, len(newPath)-1
                 paths.append(newPath)
-            if(item[1] == selectedNode):
+            elif(item[1] == selectedNode):
                 visited_nodes.append(item[0])
                 newPath = selectedPath.copy()
                 newPath.append(item[0])
@@ -24,8 +24,34 @@ def bfs(start, end, edges):
         index+=1
     return None
 
-def dls(start, end, edges, max_depth):
+def dls(start, end, edges, max_depth, visitedNodes, path):
+    selectedPath = path.copy()
+    selectedPath.append(start)
+    visitedNodes.append(start)
+    if(max_depth == 0):
+        if(start == end):
+            path.append(end)
+            return
+        else:
+            return
+    
+    selectedNode = start
+    for item in edges:
+        if(item[0] == selectedNode):
+            dls(item[1], end, edges, max_depth-1, visitedNodes, selectedPath)
+            if(visitedNodes[-1] == end):
+                l = len(selectedPath) - len(path)
+                path.extend(selectedPath[-l:])
+                return
+        elif(item[1] == selectedNode):
+            dls(item[0], end, edges, max_depth-1, visitedNodes, selectedPath)
+            if(visitedNodes[-1] == end):
+                l = len(selectedPath) - len(path)
+                path.extend(selectedPath[-l:])
+                return
     return
+        
+    
 
 def iddfs(start, end, edges, max_depth):
     return
@@ -45,7 +71,13 @@ def UnInformedSearch(method_name, problem_file_name, maximum_depth_limit):
     if method_name == "BFS":
         return bfs(lines[0], lines[1], edges)
     elif method_name == "DLS":
-        return dls(lines[0], lines[1], edges, maximum_depth_limit)
+        visitedNodes = []
+        path = []
+        dls(lines[0], lines[1], edges, maximum_depth_limit, visitedNodes, path)
+        if(visitedNodes[-1] == lines[1]):
+            return path, visitedNodes, len(path)-1
+        else:
+            return None
     elif method_name == "IDDFS":
         return iddfs(lines[0], lines[1], edges, maximum_depth_limit)
     elif method_name == "USC":
