@@ -1,23 +1,27 @@
 def bfs(start, end, edges):
-    result_path = []
-    result_list = []
+    paths = [[start]]
+    visited_nodes = [start]
     index = 0
-    result_path.append(start)
-    result_list.append(start)
 
-    while(index<len(result_list)):
-        item = result_list[index]
-        for i in edges:
-            if(i[0] == item):
-                result_list.append(i[1])
-                if(i[1] == end):
-                    return result_list
-            if(i[1] == item):
-                result_list.append(i[0])
-                if(i[0] == end):
-                    return result_list
+    while(index<len(paths)):
+        selectedPath = paths[index]
+        selectedNode = selectedPath[-1]
+        for item in edges:
+            if(item[0] == selectedNode):
+                visited_nodes.append(item[1])
+                newPath = selectedPath.copy()
+                newPath.append(item[1])
+                if(item[1] == end):
+                    return newPath, visited_nodes, len(newPath)-1
+                paths.append(newPath)
+            if(item[1] == selectedNode):
+                visited_nodes.append(item[0])
+                newPath = selectedPath.copy()
+                newPath.append(item[0])
+                if(item[0] == end):
+                    return newPath, visited_nodes, len(newPath)-1
+                paths.append(newPath)
         index+=1
-    
     return None
 
 def dls(start, end, edges, max_depth):
