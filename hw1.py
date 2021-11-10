@@ -1,3 +1,12 @@
+def selectMinPath(paths):
+    index = 0
+    value = paths[0][-1]
+    for i in range(len(paths)):
+        if(paths[i][-1] < value):
+            index = i
+            value = paths[i][-1]
+    return index
+        
 def bfs(start, end, edges):
     paths = [[start]]
     visited_nodes = [start]
@@ -51,12 +60,40 @@ def dls(start, end, edges, max_depth, visitedNodes, path):
                 return
     return
         
-    
-
 def iddfs(start, end, edges, max_depth):
+    i=1
+    while(i<max_depth+1):
+        visitedNodes = []
+        path = []
+        dls(start, end, edges, i, visitedNodes, path)
+        if(visitedNodes[-1] == end):
+            return path, visitedNodes, len(path)-1
+        i+=1
+        continue       
     return
 
 def ucs(start, end, edges):
+    visited_nodes = []
+    paths = [[start, 0]]
+    
+    while(True):
+        selectedPath = paths[selectMinPath(paths)]
+        paths.remove(selectedPath)
+        selectedNode = selectedPath[-2]
+        visited_nodes.append(selectedNode)
+        if(selectedPath[-2] == end):
+            return selectedPath[:-1], visited_nodes, len(selectedPath)-2, selectedPath[-1]
+        for item in edges:
+            if(item[0] == selectedNode):
+                newPath = selectedPath.copy()
+                newPath.insert(-1, item[1])
+                newPath[-1]+=item[2]
+                paths.append(newPath)
+            elif(item[1] == selectedNode):
+                newPath = selectedPath.copy()
+                newPath.insert(-1, item[0])
+                newPath[-1]+=item[2]
+                paths.append(newPath)   
     return
 
 def UnInformedSearch(method_name, problem_file_name, maximum_depth_limit):
@@ -67,7 +104,9 @@ def UnInformedSearch(method_name, problem_file_name, maximum_depth_limit):
 
     for item in lines[2:]:
         edges.append(item.split())
-
+    for element in edges:
+        element[2] = int(element[2])
+        
     if method_name == "BFS":
         return bfs(lines[0], lines[1], edges)
     elif method_name == "DLS":
@@ -80,5 +119,5 @@ def UnInformedSearch(method_name, problem_file_name, maximum_depth_limit):
             return None
     elif method_name == "IDDFS":
         return iddfs(lines[0], lines[1], edges, maximum_depth_limit)
-    elif method_name == "USC":
+    elif method_name == "UCS":
         return ucs(lines[0], lines[1], edges)
