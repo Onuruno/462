@@ -76,12 +76,36 @@ def fixPath(path):
     return result
 
 def heuristicPuzzle(puzzleArray):
-    cost=0
+    value=0
     for i in range(3):
         for j in range(3):
-            if(puzzleArray[i][j] == '0'):
-                pass
-                
+            if(puzzleArray[i][j] == '1'):
+                value+=(i+j)
+            elif(puzzleArray[i][j] == '2'):
+                value+=(i+abs(j-1))
+            elif(puzzleArray[i][j] == '3'):
+                value+=(i+abs(j-2))
+            elif(puzzleArray[i][j] == '4'):
+                value+=(abs(i-1)+j)
+            elif(puzzleArray[i][j] == '5'):
+                value+=(abs(i-1)+abs(j-1))
+            elif(puzzleArray[i][j] == '6'):
+                value+=(abs(i-1)+abs(j-2))
+            elif(puzzleArray[i][j] == '7'):
+                value+=(abs(i-2)+j)
+            elif(puzzleArray[i][j] == '8'):
+                value+=(abs(i-2)+abs(j-1))
+    return value
+
+def minCost(queue):
+    value=queue[0][2]
+    index=0
+    for i in range(len(queue)):
+        if(queue[i][2]<value):
+            value=queue[i][2]
+            index=i
+    return index
+            
 def ucsMaze(start, end, mazeArray):
     return mazeArray
 
@@ -149,7 +173,65 @@ def ucsPuzzle(puzzleArray):
     return None
 
 def aStarPuzzle(puzzleArray):
-    return puzzleArray
+    queue = []
+    queue.append(([puzzleArray], [], heuristicPuzzle(puzzleArray)))
+    visited = []
+    while(len(queue)>0):
+        index=minCost(queue)
+        path = queue[index][0]
+        moves = queue[index][1]
+        selectedPuzzle = path[-1]
+        queue.remove(queue[index])
+        if(selectedPuzzle in visited):
+            continue
+        if(isPuzzleCompleted(selectedPuzzle)):
+            return moves, fixPath(path), len(moves), len(moves)
+        else:
+            if(isMoveLegal(selectedPuzzle, 'L')):
+                newPuzzle = copy2(selectedPuzzle)
+                newPath = copy3(path)
+                newMoves = moves.copy()
+                
+                makeMove(newPuzzle, 'L')
+                
+                newPath.append(newPuzzle)
+                newMoves.append('LEFT')
+                queue.append((newPath, newMoves, heuristicPuzzle(newPuzzle)+len(newMoves)))
+                
+            if(isMoveLegal(selectedPuzzle, 'U')):
+                newPuzzle = copy2(selectedPuzzle)
+                newPath = copy3(path)
+                newMoves = moves.copy()
+                
+                makeMove(newPuzzle, 'U')
+                
+                newPath.append(newPuzzle)
+                newMoves.append('UP')
+                queue.append((newPath, newMoves, heuristicPuzzle(newPuzzle)+len(newMoves)))
+                
+            if(isMoveLegal(selectedPuzzle, 'R')):
+                newPuzzle = copy2(selectedPuzzle)
+                newPath = copy3(path)
+                newMoves = moves.copy()
+                
+                makeMove(newPuzzle, 'R')
+                
+                newPath.append(newPuzzle)
+                newMoves.append('RIGHT')
+                queue.append((newPath, newMoves, heuristicPuzzle(newPuzzle)+len(newMoves)))
+                
+            if(isMoveLegal(selectedPuzzle, 'D')):
+                newPuzzle = copy2(selectedPuzzle)
+                newPath = copy3(path)
+                newMoves = moves.copy()
+                
+                makeMove(newPuzzle, 'D')
+                
+                newPath.append(newPuzzle)
+                newMoves.append('DOWN')
+                queue.append((newPath, newMoves, heuristicPuzzle(newPuzzle)+len(newMoves)))
+        visited.append(copy2(selectedPuzzle))    
+    return None
 
 def InformedSearch(method_name, problem_file_name):
     with open(problem_file_name) as file:
@@ -181,11 +263,4 @@ def InformedSearch(method_name, problem_file_name):
         if(method_name == "UCS"):
             return ucsPuzzle(puzzleArray)
         elif(method_name == "AStar"):
-            return aStarPuzzle(puzzleArray)  
-
-
-#print(InformedSearch("UCS", "eightpuzzle1.txt"))
-a = [['6', '1', '2'], ['4', '0', '3'], ['7', '8', '5']]
-b=[]
-
-#print(ucsPuzzle(a))
+            return aStarPuzzle(puzzleArray)
