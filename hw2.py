@@ -11,13 +11,13 @@ def copy3(a):
         b.append(c.copy())
     return b
 
-def isPuzzleCompleted(puzzleArray):
+def isPuzzleCompleted(puzzleArray):     #Checks whether a puzzle is completed
     if (puzzleArray == [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '0']]):
         return True
     else:
         return False
     
-def isMoveLegal(puzzleArray, move):
+def isPuzzleMoveLegal(puzzleArray, move):   #Checks whether a move is legal in a puzzle
     if(move == 'L'):
         for item in puzzleArray:
             if(item[0] == '0'):
@@ -38,8 +38,23 @@ def isMoveLegal(puzzleArray, move):
             if(item == '0'):
                 return False
         return True
+    
+def isMazeMoveLegal(position, move, mazeArray):     #Checks whether a move is legal in a maze
+    if(move == 'L'):
+        if(position[0] > 0 and mazeArray[position[1]][position[0]-1] == 0):
+            return True
+    elif(move == 'U'):
+        if(position[1] > 0 and mazeArray[position[1]-1][position[0]] == 0):
+            return True
+    elif(move == 'R'):
+        if(position[0] < len(mazeArray[0])-1 and mazeArray[position[1]][position[0]+1] == 0):
+            return True
+    elif(move == 'D'):
+        if(position[1] < len(mazeArray)-1 and mazeArray[position[1]+1][position[0]] == 0):
+            return True
+    return False
 
-def makeMove(puzzleArray, move):
+def makePuzzleMove(puzzleArray, move):      #changes the given puzzle w.r.t. a move
     for i in range(3):
         for j in range(3):
             if(puzzleArray[i][j] == '0'):
@@ -62,7 +77,7 @@ def makeMove(puzzleArray, move):
         puzzleArray[row+1][column] = '0'
         return puzzleArray
 
-def fixPath(path):
+def fixPath(path):      #turns puzzle positions into valid form   [['6', '1', '2'], ['4', '0', '3'], ['7', '8', '5']] -> '6124 3785'
     result=[]
     for item in path:
         new_str=''
@@ -75,7 +90,7 @@ def fixPath(path):
         result.append(new_str)
     return result
 
-def heuristicPuzzle(puzzleArray):
+def heuristicPuzzle(puzzleArray):       #Computes a heuristic value for a puzzle with Manhattan distance
     value=0
     for i in range(3):
         for j in range(3):
@@ -97,7 +112,10 @@ def heuristicPuzzle(puzzleArray):
                 value+=(abs(i-2)+abs(j-1))
     return value
 
-def minCost(queue):
+def heuristicMaze(position, end):       #Computes a heuristic value for a maze with Manhattan distance
+    return abs(end[1]-position[1])+abs(end[0]-position[0])
+
+def minCostPuzzle(queue):       #returns index of minimum cost path in the queue
     value=queue[0][2]
     index=0
     for i in range(len(queue)):
@@ -105,12 +123,91 @@ def minCost(queue):
             value=queue[i][2]
             index=i
     return index
+
+def minCostMaze(queue):     #returns index of minimum cost path in the queue
+    value=queue[0][1]
+    index=0
+    for i in range(len(queue)):
+        if(queue[i][1]<value):
+            value=queue[i][1]
+            index=i
+    return index
             
 def ucsMaze(start, end, mazeArray):
-    return mazeArray
+    queue = []
+    queue.append([start])
+    visited = []
+    while(len(queue)>0):
+        path = queue[0]
+        selectedPosition = path[-1]
+        queue.remove(queue[0])
+        if(selectedPosition in visited):
+            continue
+        if(selectedPosition == end):
+            return path, visited, len(path)-1, len(path)-1
+        else:
+            if(isMazeMoveLegal(selectedPosition, 'L', mazeArray)):
+                newPath = path.copy()
+                newPath.append((selectedPosition[0]-1,selectedPosition[1]))
+                queue.append(newPath)
+                
+            if(isMazeMoveLegal(selectedPosition, 'U', mazeArray)):
+                newPath = path.copy()
+                newPath.append((selectedPosition[0],selectedPosition[1]-1))
+                queue.append(newPath)
+                
+            if(isMazeMoveLegal(selectedPosition, 'R', mazeArray)):
+                newPath = path.copy()
+                newPath.append((selectedPosition[0]+1,selectedPosition[1]))
+                queue.append(newPath)
+                
+            if(isMazeMoveLegal(selectedPosition, 'D', mazeArray)):
+                newPath = path.copy()
+                newPath.append((selectedPosition[0],selectedPosition[1]+1))
+                queue.append(newPath)
+        visited.append(selectedPosition)
+    return None
 
-def aStarMaze(star, end, mazeArray):
-    return mazeArray
+def aStarMaze(start, end, mazeArray):
+    queue = []
+    queue.append(([start], heuristicMaze(start, end)))
+    visited = []
+    while(len(queue)>0):
+        index = minCostMaze(queue)
+        path = queue[index][0]
+        cost = queue[index][1]
+        selectedPosition = path[-1]
+        queue.remove(queue[index])
+        if(selectedPosition in visited):
+            continue
+        if(selectedPosition == end):
+            return path, visited, len(path)-1, len(path)-1
+        else:
+            if(isMazeMoveLegal(selectedPosition, 'L', mazeArray)):
+                newPosition = (selectedPosition[0]-1,selectedPosition[1])
+                newPath = path.copy()
+                newPath.append(newPosition)
+                queue.append((newPath, cost+1+heuristicMaze(newPosition, end)))
+                
+            if(isMazeMoveLegal(selectedPosition, 'U', mazeArray)):
+                newPosition = (selectedPosition[0],selectedPosition[1]-1)
+                newPath = path.copy()
+                newPath.append(newPosition)
+                queue.append((newPath, cost+1+heuristicMaze(newPosition, end)))
+                
+            if(isMazeMoveLegal(selectedPosition, 'R', mazeArray)):
+                newPosition = (selectedPosition[0]+1,selectedPosition[1])
+                newPath = path.copy()
+                newPath.append(newPosition)
+                queue.append((newPath, cost+1+heuristicMaze(newPosition, end)))
+                
+            if(isMazeMoveLegal(selectedPosition, 'D', mazeArray)):
+                newPosition = (selectedPosition[0],selectedPosition[1]+1)
+                newPath = path.copy()
+                newPath.append(newPosition)
+                queue.append((newPath, cost+1+heuristicMaze(newPosition, end)))
+        visited.append(selectedPosition)
+    return None
         
 def ucsPuzzle(puzzleArray):
     queue = []
@@ -124,47 +221,47 @@ def ucsPuzzle(puzzleArray):
         if(selectedPuzzle in visited):
             continue
         if(isPuzzleCompleted(selectedPuzzle)):
-            return moves, fixPath(path), len(moves), len(moves)
+            return moves, fixPath(visited), len(moves), len(moves)
         else:
-            if(isMoveLegal(selectedPuzzle, 'L')):
+            if(isPuzzleMoveLegal(selectedPuzzle, 'L')):
                 newPuzzle = copy2(selectedPuzzle)
                 newPath = copy3(path)
                 newMoves = moves.copy()
                 
-                makeMove(newPuzzle, 'L')
+                makePuzzleMove(newPuzzle, 'L')
                 
                 newPath.append(newPuzzle)
                 newMoves.append('LEFT')
                 queue.append((newPath, newMoves))
                 
-            if(isMoveLegal(selectedPuzzle, 'U')):
+            if(isPuzzleMoveLegal(selectedPuzzle, 'U')):
                 newPuzzle = copy2(selectedPuzzle)
                 newPath = copy3(path)
                 newMoves = moves.copy()
                 
-                makeMove(newPuzzle, 'U')
+                makePuzzleMove(newPuzzle, 'U')
                 
                 newPath.append(newPuzzle)
                 newMoves.append('UP')
                 queue.append((newPath, newMoves))
                 
-            if(isMoveLegal(selectedPuzzle, 'R')):
+            if(isPuzzleMoveLegal(selectedPuzzle, 'R')):
                 newPuzzle = copy2(selectedPuzzle)
                 newPath = copy3(path)
                 newMoves = moves.copy()
                 
-                makeMove(newPuzzle, 'R')
+                makePuzzleMove(newPuzzle, 'R')
                 
                 newPath.append(newPuzzle)
                 newMoves.append('RIGHT')
                 queue.append((newPath, newMoves))
                 
-            if(isMoveLegal(selectedPuzzle, 'D')):
+            if(isPuzzleMoveLegal(selectedPuzzle, 'D')):
                 newPuzzle = copy2(selectedPuzzle)
                 newPath = copy3(path)
                 newMoves = moves.copy()
                 
-                makeMove(newPuzzle, 'D')
+                makePuzzleMove(newPuzzle, 'D')
                 
                 newPath.append(newPuzzle)
                 newMoves.append('DOWN')
@@ -177,7 +274,7 @@ def aStarPuzzle(puzzleArray):
     queue.append(([puzzleArray], [], heuristicPuzzle(puzzleArray)))
     visited = []
     while(len(queue)>0):
-        index=minCost(queue)
+        index = minCostPuzzle(queue)
         path = queue[index][0]
         moves = queue[index][1]
         selectedPuzzle = path[-1]
@@ -185,47 +282,47 @@ def aStarPuzzle(puzzleArray):
         if(selectedPuzzle in visited):
             continue
         if(isPuzzleCompleted(selectedPuzzle)):
-            return moves, fixPath(path), len(moves), len(moves)
+            return moves, fixPath(visited), len(moves), len(moves)
         else:
-            if(isMoveLegal(selectedPuzzle, 'L')):
+            if(isPuzzleMoveLegal(selectedPuzzle, 'L')):
                 newPuzzle = copy2(selectedPuzzle)
                 newPath = copy3(path)
                 newMoves = moves.copy()
                 
-                makeMove(newPuzzle, 'L')
+                makePuzzleMove(newPuzzle, 'L')
                 
                 newPath.append(newPuzzle)
                 newMoves.append('LEFT')
                 queue.append((newPath, newMoves, heuristicPuzzle(newPuzzle)+len(newMoves)))
                 
-            if(isMoveLegal(selectedPuzzle, 'U')):
+            if(isPuzzleMoveLegal(selectedPuzzle, 'U')):
                 newPuzzle = copy2(selectedPuzzle)
                 newPath = copy3(path)
                 newMoves = moves.copy()
                 
-                makeMove(newPuzzle, 'U')
+                makePuzzleMove(newPuzzle, 'U')
                 
                 newPath.append(newPuzzle)
                 newMoves.append('UP')
                 queue.append((newPath, newMoves, heuristicPuzzle(newPuzzle)+len(newMoves)))
                 
-            if(isMoveLegal(selectedPuzzle, 'R')):
+            if(isPuzzleMoveLegal(selectedPuzzle, 'R')):
                 newPuzzle = copy2(selectedPuzzle)
                 newPath = copy3(path)
                 newMoves = moves.copy()
                 
-                makeMove(newPuzzle, 'R')
+                makePuzzleMove(newPuzzle, 'R')
                 
                 newPath.append(newPuzzle)
                 newMoves.append('RIGHT')
                 queue.append((newPath, newMoves, heuristicPuzzle(newPuzzle)+len(newMoves)))
                 
-            if(isMoveLegal(selectedPuzzle, 'D')):
+            if(isPuzzleMoveLegal(selectedPuzzle, 'D')):
                 newPuzzle = copy2(selectedPuzzle)
                 newPath = copy3(path)
                 newMoves = moves.copy()
                 
-                makeMove(newPuzzle, 'D')
+                makePuzzleMove(newPuzzle, 'D')
                 
                 newPath.append(newPuzzle)
                 newMoves.append('DOWN')
@@ -238,8 +335,8 @@ def InformedSearch(method_name, problem_file_name):
         lines = file.read().splitlines()
         
     if(problem_file_name[0] == 'm'):
-        start = lines[0]
-        end = lines[1]
+        start = (int(lines[0][1:lines[0].index(',')]), int(lines[0][lines[0].index(',')+1:-1]))
+        end = (int(lines[1][1:lines[1].index(',')]), int(lines[1][lines[1].index(',')+1:-1]))
         mazeArray = []
         for item in lines[2:]:
             mazeline = []
