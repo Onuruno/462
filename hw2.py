@@ -143,6 +143,7 @@ def ucsMaze(start, end, mazeArray):
         queue.remove(queue[0])
         if(selectedPosition in visited):
             continue
+        visited.append(selectedPosition)
         if(selectedPosition == end):
             return path, visited, len(path)-1, len(path)-1
         else:
@@ -165,7 +166,6 @@ def ucsMaze(start, end, mazeArray):
                 newPath = path.copy()
                 newPath.append((selectedPosition[0],selectedPosition[1]+1))
                 queue.append(newPath)
-        visited.append(selectedPosition)
     return None
 
 def aStarMaze(start, end, mazeArray):
@@ -180,6 +180,7 @@ def aStarMaze(start, end, mazeArray):
         queue.remove(queue[index])
         if(selectedPosition in visited):
             continue
+        visited.append(selectedPosition)
         if(selectedPosition == end):
             return path, visited, len(path)-1, len(path)-1
         else:
@@ -206,7 +207,6 @@ def aStarMaze(start, end, mazeArray):
                 newPath = path.copy()
                 newPath.append(newPosition)
                 queue.append((newPath, cost+1+heuristicMaze(newPosition, end)))
-        visited.append(selectedPosition)
     return None
         
 def ucsPuzzle(puzzleArray):
@@ -220,6 +220,7 @@ def ucsPuzzle(puzzleArray):
         queue.remove(queue[0])
         if(selectedPuzzle in visited):
             continue
+        visited.append(copy2(selectedPuzzle)) 
         if(isPuzzleCompleted(selectedPuzzle)):
             return moves, fixPath(visited), len(moves), len(moves)
         else:
@@ -265,8 +266,7 @@ def ucsPuzzle(puzzleArray):
                 
                 newPath.append(newPuzzle)
                 newMoves.append('DOWN')
-                queue.append((newPath, newMoves))
-        visited.append(copy2(selectedPuzzle))    
+                queue.append((newPath, newMoves))   
     return None
 
 def aStarPuzzle(puzzleArray):
@@ -281,6 +281,7 @@ def aStarPuzzle(puzzleArray):
         queue.remove(queue[index])
         if(selectedPuzzle in visited):
             continue
+        visited.append(copy2(selectedPuzzle))
         if(isPuzzleCompleted(selectedPuzzle)):
             return moves, fixPath(visited), len(moves), len(moves)
         else:
@@ -326,8 +327,7 @@ def aStarPuzzle(puzzleArray):
                 
                 newPath.append(newPuzzle)
                 newMoves.append('DOWN')
-                queue.append((newPath, newMoves, heuristicPuzzle(newPuzzle)+len(newMoves)))
-        visited.append(copy2(selectedPuzzle))    
+                queue.append((newPath, newMoves, heuristicPuzzle(newPuzzle)+len(newMoves)))    
     return None
 
 def InformedSearch(method_name, problem_file_name):
