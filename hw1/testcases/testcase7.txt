@@ -1,0 +1,34 @@
+station6
+pc13
+phone0 station1 564
+phone0 station4 265
+phone0 pc7 837
+station1 pc7 668
+station1 phone9 636
+station1 pc12 147
+phone2 router3 583
+phone2 station4 150
+phone2 pc8 147
+phone2 station11 394
+router3 pc12 574
+router3 pc13 163
+station4 station6 837
+station4 phone9 605
+station4 station11 961
+station4 pc12 441
+pc5 router10 528
+pc5 pc13 785
+pc5 phone14 186
+pc7 phone9 608
+pc7 router10 445
+pc8 pc12 378
+pc8 pc15 594
+phone9 router10 535
+phone9 station11 532
+phone9 pc13 230
+router10 station11 248
+station11 pc12 927
+station11 phone14 880
+station11 pc15 290
+pc13 phone14 409
+pc13 pc15 690

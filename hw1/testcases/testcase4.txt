@@ -1,0 +1,28 @@
+node9
+node13
+node0 node7 401
+node0 node13 416
+node1 node7 960
+node1 node10 165
+node1 node16 580
+node2 node4 692
+node2 node6 74
+node2 node16 725
+node3 node5 45
+node3 node14 577
+node3 node15 251
+node3 node16 961
+node4 node8 175
+node5 node11 954
+node6 node8 388
+node6 node11 937
+node6 node14 423
+node7 node11 274
+node8 node9 976
+node8 node17 437
+node11 node14 477
+node12 node15 663
+node14 node17 564
+node15 node16 591
+node15 node17 322
+node16 node17 662
