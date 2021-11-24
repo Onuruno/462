@@ -145,7 +145,7 @@ def ucsMaze(start, end, mazeArray):
             continue
         visited.append(selectedPosition)
         if(selectedPosition == end):
-            return path, visited, len(path)-1, len(path)-1, len(visited)
+            return path, visited, len(path)-1, len(path)-1
         else:
             if(isMazeMoveLegal(selectedPosition, 'L', mazeArray)):
                 newPath = path.copy()
@@ -182,7 +182,7 @@ def aStarMaze(start, end, mazeArray):
             continue
         visited.append(selectedPosition)
         if(selectedPosition == end):
-            return path, visited, len(path)-1, len(path)-1, len(visited)
+            return path, visited, len(path)-1, len(path)-1
         else:
             if(isMazeMoveLegal(selectedPosition, 'L', mazeArray)):
                 newPosition = (selectedPosition[0]-1,selectedPosition[1])
@@ -361,11 +361,3 @@ def InformedSearch(method_name, problem_file_name):
             return ucsPuzzle(puzzleArray)
         elif(method_name == "AStar"):
             return aStarPuzzle(puzzleArray)  
-
-print(InformedSearch("AStar", "maze1.txt"))
-print(InformedSearch("UCS", "maze1.txt"))
-
-a = [['6', '1', '2'], ['4', '0', '3'], ['7', '8', '5']]
-b=[]
-
-#print(aStarPuzzle(a))
