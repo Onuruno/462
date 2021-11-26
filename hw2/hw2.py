@@ -135,8 +135,8 @@ def minCostMaze(queue):     #returns index of minimum cost path in the queue
             
 def ucsMaze(start, end, mazeArray):
     queue = []
-    queue.append([start])
-    visited = []
+    queue.append([start])       #a list containing the paths
+    visited = []            #a list containing the processed positions in the maze
     while(len(queue)>0):
         path = queue[0]
         selectedPosition = path[-1]
@@ -145,7 +145,7 @@ def ucsMaze(start, end, mazeArray):
             continue
         visited.append(selectedPosition)
         if(selectedPosition == end):
-            return path, visited, len(path)-1, len(path)-1
+            return path, visited, len(path)-1, len(path)-1, len(visited)
         else:
             if(isMazeMoveLegal(selectedPosition, 'L', mazeArray)):
                 newPath = path.copy()
@@ -169,7 +169,7 @@ def ucsMaze(start, end, mazeArray):
     return None
 
 def aStarMaze(start, end, mazeArray):
-    queue = []
+    queue = []          #a list containing the paths and the manhattan discance value of the paths' current positions
     queue.append(([start], heuristicMaze(start, end)))
     visited = []
     while(len(queue)>0):
@@ -182,7 +182,7 @@ def aStarMaze(start, end, mazeArray):
             continue
         visited.append(selectedPosition)
         if(selectedPosition == end):
-            return path, visited, len(path)-1, len(path)-1
+            return path, visited, len(path)-1, len(path)-1, len(visited)
         else:
             if(isMazeMoveLegal(selectedPosition, 'L', mazeArray)):
                 newPosition = (selectedPosition[0]-1,selectedPosition[1])
@@ -210,9 +210,9 @@ def aStarMaze(start, end, mazeArray):
     return None
         
 def ucsPuzzle(puzzleArray):
-    queue = []
+    queue = []          #a list containing the paths and moves
     queue.append(([puzzleArray], []))
-    visited = []
+    visited = []        #list of positions processed
     while(len(queue)>0):
         path = queue[0][0]
         moves = queue[0][1]
@@ -270,9 +270,9 @@ def ucsPuzzle(puzzleArray):
     return None
 
 def aStarPuzzle(puzzleArray):
-    queue = []
+    queue = []          #a list containing the paths, moves and the manhattan distance heuristic value for the moment
     queue.append(([puzzleArray], [], heuristicPuzzle(puzzleArray)))
-    visited = []
+    visited = []        #list of positions processed
     while(len(queue)>0):
         index = minCostPuzzle(queue)
         path = queue[index][0]
@@ -335,15 +335,15 @@ def InformedSearch(method_name, problem_file_name):
         lines = file.read().splitlines()
         
     if(problem_file_name[0] == 'm'):
-        start = (int(lines[0][1:lines[0].index(',')]), int(lines[0][lines[0].index(',')+1:-1]))
-        end = (int(lines[1][1:lines[1].index(',')]), int(lines[1][lines[1].index(',')+1:-1]))
+        start = (int(lines[0][1:lines[0].index(',')]), int(lines[0][lines[0].index(',')+1:-1]))         #x,y positions of the start tuple
+        end = (int(lines[1][1:lines[1].index(',')]), int(lines[1][lines[1].index(',')+1:-1]))           #x,y positions of the end tuple
         mazeArray = []
         for item in lines[2:]:
-            mazeline = []
+            mazeline = []           #list containing lists, each one is representation of lines of maze
             for character in item:
-                if(character == " "):
+                if(character == " "):           #adds 0 for the empty space
                     mazeline.append(0)
-                elif(character == "#"):
+                elif(character == "#"):         #adds 1 for the walls
                     mazeline.append(1)
             mazeArray.append(mazeline)
         
@@ -354,7 +354,7 @@ def InformedSearch(method_name, problem_file_name):
                 
     elif(problem_file_name[0] == 'e'):
         puzzleArray = []
-        for item in lines[:3]:
+        for item in lines[:3]:      #gets start position of the puzzle
             puzzleArray.append(item.split())
      
         if(method_name == "UCS"):
