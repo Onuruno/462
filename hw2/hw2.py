@@ -175,7 +175,7 @@ def aStarMaze(start, end, mazeArray):
     while(len(queue)>0):
         index = minCostMaze(queue)
         path = queue[index][0]
-        cost = queue[index][1]
+        cost = len(queue[index])
         selectedPosition = path[-1]
         queue.remove(queue[index])
         if(selectedPosition in visited):
