@@ -1,4 +1,0 @@
->>> print(hw3.GameSolve("Minimax", "tictactoe4.txt", "MAX"))
-(4.98, (1, 1), ['XOXX O   ', 'XOXXOO   ', ...])
->>> print(hw3.GameSolve("AlphaBeta", "tictactoe4.txt", "MAX"))
-(4.98, (1, 1), ['XOXX O   ', 'XOXXOO   ', ... ])
