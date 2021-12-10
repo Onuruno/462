@@ -74,16 +74,127 @@ def AlphaBetaGameTreeMax(tree, visited, parent_value):
             temp_value = max(children)
     return max(children), children.index(max(children))
 
+def possibleMoves(board):
+    moves = []
+    for i in range(3):
+        for j in range(3):
+            if(board[i][j] == ' '):
+                moves.append((i,j))
+    return moves
+
+def isGameOver(depth, board):
+    for i in range(3):
+        if(board[i][0]=='X' and board[i][1]=='X' and board[i][2]=='X'):
+            return 5-0.01*(depth-1)
+        if(board[i][0]=='O' and board[i][1]=='O' and board[i][2]=='O'):
+            return -5
+    for j in range(3):
+        if(board[0][j]=='X' and board[1][j]=='X' and board[2][j]=='X'):
+            return 5-0.01*(depth-1)
+        if(board[0][j]=='O' and board[1][j]=='O' and board[2][j]=='O'):
+            return -5
+    if(board[0][0]=='X' and board[1][1]=='X' and board[2][2]=='X'):
+        return 5-0.01*(depth-1)
+    if(board[0][0]=='O' and board[1][1]=='O' and board[2][2]=='O'):
+        return -5
+    if(board[2][0]=='X' and board[1][1]=='X' and board[0][2]=='X'):
+        return 5-0.01*(depth-1)
+    if(board[2][0]=='O' and board[1][1]=='O' and board[0][2]=='O'):
+        return -5
+    if(any(' ' in s for s in board)):
+        return None
+    return 0
+
+def MinimaxTTTMin(depth, board, visited):
+    moves = possibleMoves(board)
+    children = []
+    for i,j in moves:
+        copyboard = [row[:] for row in board]
+        copyboard[i][j]='O'
+        visited.append(copyboard)
+        score = isGameOver(depth, copyboard)
+        if(score != None):
+            children.append(score)
+            continue
+        value = MinimaxTTTMax(depth+1, copyboard, visited)[0]
+        children.append(value)
+    return min(children), children.index(min(children))
+
+def MinimaxTTTMax(depth, board, visited):
+    moves = possibleMoves(board)
+    children = []
+    for i,j in moves:
+        copyboard = [row[:] for row in board]
+        copyboard[i][j]='X'
+        visited.append(copyboard)
+        score = isGameOver(depth, copyboard)
+        if(score != None):
+            children.append(score)
+            continue
+        value = MinimaxTTTMin(depth+1, copyboard, visited)[0]
+        children.append(value)
+    return max(children), children.index(max(children))
+
+def AlphaBetaTTTMin(depth, board, visited, parent_value):
+    moves = possibleMoves(board)
+    children = []
+    temp_value = parent_value
+    for i,j in moves:
+        copyboard = [row[:] for row in board]
+        copyboard[i][j]='O'
+        visited.append(copyboard)
+        score = isGameOver(depth, copyboard)
+        if(score != None):
+            if(parent_value != None and score <= parent_value):
+                return score, len(children)
+            children.append(score)
+            temp_value = min(children)
+            continue
+        value = AlphaBetaTTTMax(depth+1, copyboard, visited, temp_value)[0]
+        if(parent_value != None and value <= parent_value):
+            return value, len(children)
+        children.append(value)
+        temp_value = min(children)
+    return min(children), children.index(min(children))
+
+def AlphaBetaTTTMax(depth, board, visited, parent_value):
+    moves = possibleMoves(board)
+    children = []
+    temp_value = parent_value
+    for i,j in moves:
+        copyboard = [row[:] for row in board]
+        copyboard[i][j]='X'
+        visited.append(copyboard)
+        score = isGameOver(depth, copyboard)
+        if(score != None):
+            if(parent_value != None and score >= parent_value):
+                return score, len(children)
+            children.append(score)
+            temp_value = max(children)
+            continue
+        value = AlphaBetaTTTMin(depth+1, copyboard, visited, temp_value)[0]
+        if(parent_value != None and value >= parent_value):
+            return value, len(children)
+        children.append(value)
+        temp_value = max(children)
+    return max(children), children.index(max(children))
+
+def organizeList(lst):
+    resultList = []
+    for item in lst:
+        string = ''
+        for i in range(3):
+            for j in range(3):
+                string = string+(item[i][j])
+        resultList.append(string)
+    return resultList
+
 def SolveGame(method_name, problem_file_name, player_type):
     with open(problem_file_name) as file:
             lines = file.read().splitlines()        
     if(problem_file_name[0] == 'g'):        #gametree case
-        tree = []                       #tree[0] is root, tree[1] is list of edges in tree, tree[2] is list of leaf nodes
-        tree.append(lines[0]) 
-        tree.append([])
-        tree.append([])
-        visited = []                #list of expanded nodes
-        visited.append(lines[0])    #add root to expanded
+        tree = [lines[0],[],[]]                       #tree[0] is root, tree[1] is list of edges in tree, tree[2] is list of leaf nodes
+        visited = [lines[0]]                #list of expanded nodes added root first
         for item in lines[1:]:
             if(len(item.split()) == 1):
                 index = item.split()[0].index(':')
@@ -105,9 +216,20 @@ def SolveGame(method_name, problem_file_name, player_type):
         board = []                      #board is list of lists each contains a row
         for item in lines:
             line = []
-            for character in item[:-1]:
+            for character in item:
                 line.append(character)
             board.append(line)
+        visited = []
+        if(method_name == 'Minimax'):
+            result= MinimaxTTTMax(1, board, visited)
+            score = result[0]
+            position = (possibleMoves(board)[result[1]][1],possibleMoves(board)[result[1]][0])
+            return score, position, organizeList(visited)
+        elif(method_name == 'AlphaBeta'):
+            result =  AlphaBetaTTTMax(1, board, visited, None)
+            score = result [0]
+            position = (possibleMoves(board)[result[1]][1],possibleMoves(board)[result[1]][0])
+            return score, position, organizeList(visited)
         return board
     
-#print(SolveGame('AlphaBeta', "gametree1.txt", 'MAX'))
+#print(SolveGame('AlphaBeta', "tictactoe1.txt", 'MAX'))
