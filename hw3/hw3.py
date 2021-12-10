@@ -151,7 +151,7 @@ def AlphaBetaTTTMin(depth, board, visited, parent_value):
             temp_value = min(children)
             continue
         value = AlphaBetaTTTMax(depth+1, copyboard, visited, temp_value)[0]
-        if(parent_value != None and value <= parent_value):
+        if(parent_value != None and value < parent_value):
             return value, len(children)
         children.append(value)
         temp_value = min(children)
@@ -173,7 +173,7 @@ def AlphaBetaTTTMax(depth, board, visited, parent_value):
             temp_value = max(children)
             continue
         value = AlphaBetaTTTMin(depth+1, copyboard, visited, temp_value)[0]
-        if(parent_value != None and value >= parent_value):
+        if(parent_value != None and value > parent_value):
             return value, len(children)
         children.append(value)
         temp_value = max(children)
@@ -232,4 +232,4 @@ def SolveGame(method_name, problem_file_name, player_type):
             return score, position, organizeList(visited)
         return board
     
-#print(SolveGame('AlphaBeta', "tictactoe1.txt", 'MAX'))
+#print(SolveGame('AlphaBeta', "tictactoe2.txt", 'MAX'))
