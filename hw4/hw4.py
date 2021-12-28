@@ -1,3 +1,9 @@
+def PolicyIteration(obstacle_states, goal_states, reward, action_probabilities, gamma, epsilon, num_iteration):
+    return
+
+def ValueIteration(obstacle_states, goal_states, reward, action_probabilities, gamma, epsilon, num_iteration):
+    return
+
 def SolveMDP(method_name, problem_file_name):
     with open (problem_file_name) as file:
         lines = file.read().splitlines()
@@ -26,6 +32,6 @@ def SolveMDP(method_name, problem_file_name):
     num_iteration = float(lines[17])
 
     if(method_name == "ValueIteration"):
-        pass
+        return ValueIteration(obstacle_states, goal_states, reward, action_probabilities, gamma, epsilon, num_iteration)
     elif(method_name == "PolicyIteration"):
-        pass
+        return PolicyIteration(obstacle_states, goal_states, reward, action_probabilities, gamma, epsilon, num_iteration)
