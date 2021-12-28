@@ -25,4 +25,7 @@ def SolveMDP(method_name, problem_file_name):
     epsilon = float(lines[15])
     num_iteration = float(lines[17])
 
-    return obstacle_states, goal_states, reward, action_probabilities, gamma, epsilon, num_iteration
+    if(method_name == "ValueIteration"):
+        pass
+    elif(method_name == "PolicyIteration"):
+        pass
