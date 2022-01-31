@@ -86,3 +86,9 @@ def viterbi(problem_file_name):
         output_states.append('state'+str(states[i]+1))
     
     final_probabilty = getMax([row[-1] for row in result])
+    
+    state_dictionary = {}
+    for i in range(num_of_states):
+        state_dictionary.update({'state'+str(i+1): result[i]})
+    
+    return output_states, final_probabilty, state_dictionary
