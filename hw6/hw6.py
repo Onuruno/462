@@ -1,24 +1,11 @@
 def getMax(arr):            #returns maximum element of an array
-    result = arr[0]
+    value = arr[0][1]
+    idx = arr[0][0]
     for item in arr[1:]:
-        if(item > result):
-            result = item
-    return result
-
-def argMax(arr):            #returns array of indices of maximum elements in the 2d array column-wise
-    row = len(arr)
-    col = len(arr[0])
-
-    result = []
-    for j in range(col):
-        value = 0
-        idx = 0
-        for i in range(row):
-            if(arr[i][j] > value):
-                value = arr[i][j]
-                idx = i
-        result.append(idx)
-    return result
+        if(item[1] > value):
+            value = item[1]
+            idx = item[0]
+    return idx, value
 
 def calculate_viterbi(A, B, pi, O):
     N = len(A)
@@ -29,20 +16,22 @@ def calculate_viterbi(A, B, pi, O):
     for i in range(N):
         arr = []
         for j in range(T):
-            arr.append(0.0)
+            arr.append((None, 0.0))
         result.append(arr)
     
     for j in range(N):
-        result[j][0] = pi[j]*B[j][O[0]]
+        result[j][0] = (None, pi[j]*B[j][O[0]])
     
     for j in range(1,T):
         for i in range(N):
             values = []
             for k in range(N):
-                values.append(result[k][j-1]*A[k][i]*B[i][O[j]])
+                values.append((k, result[k][j-1][1]*A[k][i]*B[i][O[j]]))
             result[i][j] = getMax(values)
-    max_values = argMax(result)
-    return max_values, result
+
+    state_sequence = []
+
+    return result
 
 
 def viterbi(problem_file_name):
@@ -92,3 +81,10 @@ def viterbi(problem_file_name):
         state_dictionary.update({'state'+str(i+1): result[i]})
     
     return output_states, final_probabilty, state_dictionary
+
+A = [[0.2, 0.8],[0.3, 0.7]]
+B = [[0.75, 0.25], [0.4, 0.6]]
+pi = [0.5, 0.5]
+O = [0, 1, 1, 1, 0]
+
+print(calculate_viterbi(A, B, pi, O))
