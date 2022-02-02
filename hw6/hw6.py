@@ -38,7 +38,7 @@ def calculate_viterbi(A, B, pi, O):
         idx = result[idx][m][0]
         state_sequence.insert(0, idx)
 
-    return state_sequence
+    return state_sequence, final_prob, result
 
 
 def viterbi(problem_file_name):
@@ -75,23 +75,14 @@ def viterbi(problem_file_name):
     for item in observation_queue_text:
         observations.append(int(item[item.find('s')+1:])-1)
         
-    states, result = calculate_viterbi(transition_probs, observation_probs, pi, observations)
+    states, final_probabilty, result = calculate_viterbi(transition_probs, observation_probs, pi, observations)
     
     output_states = []
     for i in range(len(states)):
         output_states.append('state'+str(states[i]+1))
     
-    final_probabilty = getMax([row[-1] for row in result])
-    
     state_dictionary = {}
     for i in range(num_of_states):
-        state_dictionary.update({'state'+str(i+1): result[i]})
+        state_dictionary.update({'state'+str(i+1): [it[1] for it in result[i]]})
     
     return output_states, final_probabilty, state_dictionary
-
-A = [[0.2, 0.8],[0.3, 0.7]]
-B = [[0.75, 0.25], [0.4, 0.6]]
-pi = [0.5, 0.5]
-O = [0, 1, 1, 1, 0]
-
-print(calculate_viterbi(A, B, pi, O))
