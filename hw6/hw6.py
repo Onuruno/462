@@ -30,8 +30,15 @@ def calculate_viterbi(A, B, pi, O):
             result[i][j] = getMax(values)
 
     state_sequence = []
+    idx, final_prob = getMax([row[-1] for row in result])
+    state_sequence.insert(0, [row[-1] for row in result].index((idx, final_prob)))
+    state_sequence.insert(0, idx)
+    
+    for m in range(T-2, 0, -1):
+        idx = result[idx][m][0]
+        state_sequence.insert(0, idx)
 
-    return result
+    return state_sequence
 
 
 def viterbi(problem_file_name):
